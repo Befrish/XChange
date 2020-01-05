@@ -2,7 +2,10 @@ package org.knowm.xchange.binance.dto.marketdata;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.knowm.xchange.currency.CurrencyPair;
+import org.knowm.xchange.dto.marketdata.Candlestick;
 
 public final class BinanceKline {
 
@@ -20,7 +23,7 @@ public final class BinanceKline {
   private final BigDecimal takerBuyBaseAssetVolume;
   private final BigDecimal takerBuyQuoteAssetVolume;
 
-  public BinanceKline(CurrencyPair pair, KlineInterval interval, Object[] obj) {
+  public BinanceKline(final CurrencyPair pair, final KlineInterval interval, final Object[] obj) {
     this.pair = pair;
     this.interval = interval;
     this.openTime = Long.valueOf(obj[0].toString());
@@ -92,9 +95,23 @@ public final class BinanceKline {
     return takerBuyQuoteAssetVolume;
   }
 
+  @Override
   public String toString() {
-    String tstamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(openTime);
+    final String tstamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(openTime);
     return String.format(
         "[%s] %s %s O:%.6f A:%.6f C:%.6f", pair, tstamp, interval, open, getAveragePrice(), close);
+  }
+
+  public Candlestick toCandlestick() {
+      return new Candlestick.Builder()
+              .currencyPair(pair)
+              .open(open)
+              .close(close)
+              .high(high)
+              .low(low)
+              .volume(volume)
+              .quoteVolume(quoteAssetVolume)
+              .timestamp(new Date(openTime))
+              .build();
   }
 }
